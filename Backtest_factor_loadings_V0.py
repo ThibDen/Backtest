@@ -29,7 +29,7 @@ min_bootstrap=60 #How long of a sample do you want to draw, at minumum
 max_bootstrap=120 #How long of a sample do you want to draw, at maximum
 
 #Portfolio A
-monthly_alpha_A=0.0 #Excess yearly returns of portfolio in %
+monthly_alpha_A=0.1 #Excess monthly returns of portfolio in %
 yearly_portfolio_cost_A=0.7 #Total yearly in % costs for portfolio (TER + implicit trading costs/divident leakage)
 factor_exposure_Dev_A=np.array([1,0.2,0.2,0.2,0.2,0.2,0])*0 #Exposure to risk F-F factors of the developped world: in order ['Date', 'Mkt-RF', 'SMB', 'HML', 'RMW', 'CMA','RF']
 factor_exposure_US_A=np.array([1,0.3,0.3,0.3,0.3,0.3,1])*1#Exposure to risk F-F factors of the US: in order ['Date', 'Mkt-RF', 'SMB', 'HML', 'RMW', 'CMA','RF']
