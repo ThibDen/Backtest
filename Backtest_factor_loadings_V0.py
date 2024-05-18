@@ -29,10 +29,10 @@ max_bootstrap=120 #How long of a sample do you want to draw, at maximum
 #Portfolio A
 monthly_alpha_A=0.1 #Excess monthly returns of portfolio in %
 yearly_portfolio_cost_A=0.7 #Total yearly in % costs for portfolio (TER + implicit trading costs/divident leakage)
-factor_exposure_Dev_A=np.array([1,0.2,0.2,0.2,0.2,0.2,0])*0 #Exposure to risk F-F factors of the developped world: in order ['Date', 'Mkt-RF', 'SMB', 'HML', 'RMW', 'CMA','RF']
-factor_exposure_US_A=np.array([ 1.07416148e+00,  3.86732434e-01,  2.19570498e-01,1.95605650e-01,  1.60932270e-01, -1.22987208e-01,1])*1#Exposure to risk F-F factors of the US: in order ['Date', 'Mkt-RF', 'SMB', 'HML', 'RMW', 'CMA','RF']
-factor_exposure_EU_A=np.array([1,0.5,0.5,0.5,0.5,0.5,0])*0 #Exposure to risk F-F factors of the EU: in order ['Date', 'Mkt-RF', 'SMB', 'HML', 'RMW', 'CMA','RF']
-factor_exposure_EM_A=np.array([1,0.2,0.2,0.2,0.2,0.2,0])*0 #Exposure to risk F-F factors of the emerging market: in order ['Date', 'Mkt-RF', 'SMB', 'HML', 'RMW', 'CMA','RF']
+factor_exposure_Dev_A=np.array([1,0.2,0.2,0.2,0.2,0.2,0])*0 #Exposure to risk F-F factors of the developped world: in order ['Date', 'Mkt-RF', 'SMB', 'HML', 'RMW', 'CMA','WML','RF']
+factor_exposure_US_A=np.array([ 1.07416148e+00,  3.86732434e-01,  2.19570498e-01,1.95605650e-01,  1.60932270e-01, -1.22987208e-01,1])*1#Exposure to risk F-F factors of the US: in order ['Date', 'Mkt-RF', 'SMB', 'HML', 'RMW', 'CMA','WML','RF']
+factor_exposure_EU_A=np.array([1,0.5,0.5,0.5,0.5,0.5,0])*0 #Exposure to risk F-F factors of the EU: in order ['Date', 'Mkt-RF', 'SMB', 'HML', 'RMW', 'CMA','WML','RF']
+factor_exposure_EM_A=np.array([1,0.2,0.2,0.2,0.2,0.2,0])*0 #Exposure to risk F-F factors of the emerging market: in order ['Date', 'Mkt-RF', 'SMB', 'HML', 'RMW', 'CMA','WML','RF']
 
 #Portfolio B
 monthly_alpha_B=-0.02
