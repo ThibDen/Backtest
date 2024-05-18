@@ -22,8 +22,6 @@ Start_invest=1000 #Invest amount start
 Monthly_DCA=1000 #Monthly contributions
 Transaction_costs=0.3 #% costs per buy/sell, for example, in Belgium 0.12% tax +0.18%  broker costs This cost is also used for rebalancing and for initial investment so 0.30 would for me probably be an overstatement.
 
-haircut_min=0 #minimum haircut we want to apply, on the 5 factors 'Mkt-RF', 'SMB', 'HML', 'RMW', 'CMA','WML'
-haircut_max=0.5 #maximum haircut
 
 min_bootstrap=60 #How long of a sample do you want to draw, at minumum
 max_bootstrap=120 #How long of a sample do you want to draw, at maximum
@@ -32,15 +30,15 @@ max_bootstrap=120 #How long of a sample do you want to draw, at maximum
 monthly_alpha_A=0.1 #Excess monthly returns of portfolio in %
 yearly_portfolio_cost_A=0.7 #Total yearly in % costs for portfolio (TER + implicit trading costs/divident leakage)
 factor_exposure_Dev_A=np.array([1,0.2,0.2,0.2,0.2,0.2,0])*0 #Exposure to risk F-F factors of the developped world: in order ['Date', 'Mkt-RF', 'SMB', 'HML', 'RMW', 'CMA','RF']
-factor_exposure_US_A=np.array([1,0.3,0.3,0.3,0.3,0.3,1])*1#Exposure to risk F-F factors of the US: in order ['Date', 'Mkt-RF', 'SMB', 'HML', 'RMW', 'CMA','RF']
+factor_exposure_US_A=np.array([ 1.07416148e+00,  3.86732434e-01,  2.19570498e-01,1.95605650e-01,  1.60932270e-01, -1.22987208e-01,1])*1#Exposure to risk F-F factors of the US: in order ['Date', 'Mkt-RF', 'SMB', 'HML', 'RMW', 'CMA','RF']
 factor_exposure_EU_A=np.array([1,0.5,0.5,0.5,0.5,0.5,0])*0 #Exposure to risk F-F factors of the EU: in order ['Date', 'Mkt-RF', 'SMB', 'HML', 'RMW', 'CMA','RF']
 factor_exposure_EM_A=np.array([1,0.2,0.2,0.2,0.2,0.2,0])*0 #Exposure to risk F-F factors of the emerging market: in order ['Date', 'Mkt-RF', 'SMB', 'HML', 'RMW', 'CMA','RF']
 
 #Portfolio B
-monthly_alpha_B=0
+monthly_alpha_B=-0.02
 yearly_portfolio_cost_B=0.4
 factor_exposure_Dev_B=np.array([1,0,0,0,0,0,0])*0
-factor_exposure_US_B=np.array([1,0,0,0,0,0,1])*1
+factor_exposure_US_B=np.array([9.98589838e-01, -1.78133193e-01, -1.86804637e-02, 2.78833807e-02,  3.28247200e-02, -7.33886532e-03,1])*1
 factor_exposure_EU_B=np.array([0,0,0,0,0,0,0])*0
 factor_exposure_EM_B=np.array([1,0,0,0,0,0,0])*0
 
@@ -138,7 +136,7 @@ Net_of_costs=1-Transaction_costs/100 #calculate the net of transaction cost rate
 #Now the real core of the simualtion
 
 @jit(nopython=True) #this is too make the code more efficient
-def calculate_values(months, Data,Tot_fact_exposure,start_cap, monthly_cap, monthly_correction,Net_of_costs, haircut_min, haircut_max):  
+def calculate_values(months, Data,Tot_fact_exposure,start_cap, monthly_cap, monthly_correction,Net_of_costs):  
     returns=1+np.dot(Data, Tot_fact_exposure)+monthly_correction 
     time_span_data=np.shape(Data)[0]
     Value = np.zeros((time_span_data-months,months)) #simulate DCA 
@@ -176,10 +174,10 @@ def create_histogram_gif(Returns_A, Returns_B, Start_invest, Monthly_DCA, portfo
     for i in range(11, Returns_A.shape[1], 12):
         if indic>2: #to check if we are working with returns or anualized retruns, very patch way to do this, can go wrong, check later
             y_max=max(np.shape(Returns_A)[0]*(1-(2*(i-11)/np.shape(Returns_A)[1])),np.shape(Returns_A)[0]/2)
-            title= f'DCA of {Monthly_DCA} after {i//12+1} years, haircut range of [{haircut_min}, {haircut_max}]'
+            title= f'Initial investment of {Start_invest} and DCA of {Monthly_DCA} after {i//12+1} years]'
         else:
             y_max=np.shape(Returns_A)[0]/2
-            title= f'Annualized returns {i//12+1} years, haircut range of [{haircut_min}, {haircut_max}]'
+            title= f'Annualized returns {i//12+1} years]'
 
         fig, ax = plt.subplots(figsize=(10, 6))
 
@@ -244,7 +242,7 @@ def Table(data,months, title_port, table_text):
 
 
 # The main function
-def calculate_returns_and_plot(months, merged_data, Start_invest, Monthly_DCA,Net_of_costs,Tot_fact_exposure_A,Tot_fact_exposure_B, Monthly_alfa_min_cost_A,Monthly_alfa_min_cost_B, haircut_min, haircut_max):
+def calculate_returns_and_plot(months, merged_data, Start_invest, Monthly_DCA,Net_of_costs,Tot_fact_exposure_A,Tot_fact_exposure_B, Monthly_alfa_min_cost_A,Monthly_alfa_min_cost_B):
     #retrieve relevant data per portfolio
     merged_data_np_A, Tot_fact_exposure_A = process_data(merged_data, factors_ff6_US, Tot_fact_exposure_A )
     merged_data_np_B, Tot_fact_exposure_B = process_data(merged_data, factors_ff6_US, Tot_fact_exposure_B )
@@ -254,8 +252,8 @@ def calculate_returns_and_plot(months, merged_data, Start_invest, Monthly_DCA,Ne
     Tot_fact_exposure_B=np.array(Tot_fact_exposure_B, dtype=np.float64)
 
     #call the main function 
-    Value_A, Value_fixed_inv_A = calculate_values(months, merged_data_np_A, Tot_fact_exposure_A, Start_invest, Monthly_DCA, Monthly_alfa_min_cost_A,Net_of_costs, haircut_min, haircut_max)
-    Value_B, Value_fixed_inv_B = calculate_values(months, merged_data_np_B, Tot_fact_exposure_B, Start_invest, Monthly_DCA, Monthly_alfa_min_cost_B,Net_of_costs, haircut_min, haircut_max)
+    Value_A, Value_fixed_inv_A = calculate_values(months, merged_data_np_A, Tot_fact_exposure_A, Start_invest, Monthly_DCA, Monthly_alfa_min_cost_A,Net_of_costs)
+    Value_B, Value_fixed_inv_B = calculate_values(months, merged_data_np_B, Tot_fact_exposure_B, Start_invest, Monthly_DCA, Monthly_alfa_min_cost_B,Net_of_costs)
 
 
     #calcualted the anualized rate of returns per month for both portfolios. 
@@ -309,7 +307,7 @@ def calculate_returns_and_plot(months, merged_data, Start_invest, Monthly_DCA,Ne
     ax2.grid(True)
     ax2.set_ylim([-100, y_max])  # Set the y-axis limit
 
-    fig.suptitle(f'Returns with DCA of {Monthly_DCA}, haircut range of [{haircut_min}, {haircut_max}]', fontsize=16)
+    fig.suptitle(f'Returns with initial investment of {Start_invest} and DCA of {Monthly_DCA}', fontsize=16)
 
     plt.show()
 
@@ -324,14 +322,14 @@ def calculate_returns_and_plot(months, merged_data, Start_invest, Monthly_DCA,Ne
 
     ax.set_xlabel('Years')
     ax.set_ylabel('Chance of profit (%)')
-    ax.set_title(f'Probability of profit with DCA of {Monthly_DCA}, haircut range of [{haircut_min}, {haircut_max}]', fontsize=16)
+    ax.set_title(f'Probability of profit with initial investment of {Start_invest} and DCA of {Monthly_DCA}', fontsize=16)
     ax.legend()
     ax.grid(True)
 
     plt.show()
     create_histogram_gif((Value_A/invested-1)*100, (Value_B/invested-1)*100, Start_invest, Monthly_DCA, title_port_A, title_port_B)
     create_histogram_gif(IRR_A, IRR_B, 0, 1, title_port_A, title_port_B)
-    table_text=f'End value with DCA of {Monthly_DCA}'
+    table_text=f'End value with initial investment of {Start_invest} and DCA of {Monthly_DCA}'
     Table(Value_A, months,title_port_A, table_text)
     Table(Value_B,months, title_port_B, table_text)
     table_text= 'Anualized returns'
@@ -339,7 +337,7 @@ def calculate_returns_and_plot(months, merged_data, Start_invest, Monthly_DCA,Ne
     Table(IRR_B,months, title_port_B, table_text)
 
 # Call the function
-calculate_returns_and_plot(months, merged_data, Start_invest, Monthly_DCA,Net_of_costs,Tot_fact_exposure_A,Tot_fact_exposure_B, Monthly_alfa_min_cost_A,Monthly_alfa_min_cost_B, haircut_min, haircut_max)
+calculate_returns_and_plot(months, merged_data, Start_invest, Monthly_DCA,Net_of_costs,Tot_fact_exposure_A,Tot_fact_exposure_B, Monthly_alfa_min_cost_A,Monthly_alfa_min_cost_B)
 
 
 
