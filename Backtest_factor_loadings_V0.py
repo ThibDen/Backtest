@@ -138,7 +138,7 @@ Net_of_costs=1-Transaction_costs/100 #calculate the net of transaction cost rate
 #Now the real core of the simualtion
 
 @jit(nopython=True) #this is too make the code more efficient
-def calculate_values(months, Data,Tot_fact_exposure,nr_sim,start_cap, monthly_cap, monthly_correction,Net_of_costs, haircut_min, haircut_max):  
+def calculate_values(months, Data,Tot_fact_exposure,start_cap, monthly_cap, monthly_correction,Net_of_costs, haircut_min, haircut_max):  
     returns=1+np.dot(Data, Tot_fact_exposure)+monthly_correction 
     time_span_data=np.shape(Data)[0]
     Value = np.zeros((time_span_data-months,months)) #simulate DCA 
@@ -244,7 +244,7 @@ def Table(data,months, title_port, table_text):
 
 
 # The main function
-def calculate_returns_and_plot(months, merged_data, nr_sim, Start_invest, Monthly_DCA,Net_of_costs,Tot_fact_exposure_A,Tot_fact_exposure_B, Monthly_alfa_min_cost_A,Monthly_alfa_min_cost_B, haircut_min, haircut_max):
+def calculate_returns_and_plot(months, merged_data, Start_invest, Monthly_DCA,Net_of_costs,Tot_fact_exposure_A,Tot_fact_exposure_B, Monthly_alfa_min_cost_A,Monthly_alfa_min_cost_B, haircut_min, haircut_max):
     #retrieve relevant data per portfolio
     merged_data_np_A, Tot_fact_exposure_A = process_data(merged_data, factors_ff6_US, Tot_fact_exposure_A )
     merged_data_np_B, Tot_fact_exposure_B = process_data(merged_data, factors_ff6_US, Tot_fact_exposure_B )
@@ -254,8 +254,8 @@ def calculate_returns_and_plot(months, merged_data, nr_sim, Start_invest, Monthl
     Tot_fact_exposure_B=np.array(Tot_fact_exposure_B, dtype=np.float64)
 
     #call the main function 
-    Value_A, Value_fixed_inv_A = calculate_values(months, merged_data_np_A, Tot_fact_exposure_A, nr_sim, Start_invest, Monthly_DCA, Monthly_alfa_min_cost_A,Net_of_costs, haircut_min, haircut_max)
-    Value_B, Value_fixed_inv_B = calculate_values(months, merged_data_np_B, Tot_fact_exposure_B, nr_sim, Start_invest, Monthly_DCA, Monthly_alfa_min_cost_B,Net_of_costs, haircut_min, haircut_max)
+    Value_A, Value_fixed_inv_A = calculate_values(months, merged_data_np_A, Tot_fact_exposure_A, Start_invest, Monthly_DCA, Monthly_alfa_min_cost_A,Net_of_costs, haircut_min, haircut_max)
+    Value_B, Value_fixed_inv_B = calculate_values(months, merged_data_np_B, Tot_fact_exposure_B, Start_invest, Monthly_DCA, Monthly_alfa_min_cost_B,Net_of_costs, haircut_min, haircut_max)
 
 
     #calcualted the anualized rate of returns per month for both portfolios. 
@@ -339,7 +339,7 @@ def calculate_returns_and_plot(months, merged_data, nr_sim, Start_invest, Monthl
     Table(IRR_B,months, title_port_B, table_text)
 
 # Call the function
-calculate_returns_and_plot(months, merged_data, nr_sim, Start_invest, Monthly_DCA,Net_of_costs,Tot_fact_exposure_A,Tot_fact_exposure_B, Monthly_alfa_min_cost_A,Monthly_alfa_min_cost_B, haircut_min, haircut_max)
+calculate_returns_and_plot(months, merged_data, Start_invest, Monthly_DCA,Net_of_costs,Tot_fact_exposure_A,Tot_fact_exposure_B, Monthly_alfa_min_cost_A,Monthly_alfa_min_cost_B, haircut_min, haircut_max)
 
 
 
